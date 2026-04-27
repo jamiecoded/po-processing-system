@@ -23,4 +23,4 @@ databases:
   - name: po-automation-db
     plan: free
     databaseName: po_db
-    user: postgres
+    user: po_user
