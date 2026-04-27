@@ -113,7 +113,6 @@ export default function Upload() {
     <div className="page-wrapper" style={{ minHeight: '100vh', background: '#000000' }}>
       <Navbar />
 
-      {/* Spotlight */}
       <div style={{
         position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
         width: '100%', height: '400px', pointerEvents: 'none', zIndex: 0,
@@ -135,7 +134,6 @@ export default function Upload() {
           Upload a PDF purchase order to extract and store its data automatically.
         </p>
 
-        {/* Drop zone */}
         <div
           {...getRootProps()}
           className="dropzone"
@@ -166,7 +164,6 @@ export default function Upload() {
           </div>
         </div>
 
-        {/* Selected file */}
         {file && (
           <div style={{
             marginTop: '16px',
@@ -204,7 +201,6 @@ export default function Upload() {
           </div>
         )}
 
-        {/* Progress bar */}
         {uploading && (
           <div style={{ marginTop: '16px' }}>
             <div style={{
@@ -225,7 +221,6 @@ export default function Upload() {
           </div>
         )}
 
-        {/* CTA button */}
         <button
           onClick={handleUpload}
           disabled={!canUpload}
@@ -263,7 +258,6 @@ export default function Upload() {
           )}
         </button>
 
-        {/* Result card */}
         {result && (
           <div style={{
             marginTop: '28px',

@@ -172,7 +172,6 @@ export default function Dashboard() {
     <div className="page-wrapper dashboard" style={{ minHeight: '100vh', background: '#000000' }}>
       <Navbar />
 
-      {/* Spotlight */}
       <div style={{
         position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
         width: '100%', height: '400px', pointerEvents: 'none', zIndex: 0,
@@ -181,7 +180,6 @@ export default function Dashboard() {
 
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '36px 24px', position: 'relative', zIndex: 1 }}>
 
-        {/* Page header */}
         <div className="dashboard-header" style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -200,9 +198,7 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Pills Container */}
           <div className="dashboard-header-pills" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            {/* Auto-Refresh pill */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -225,7 +221,6 @@ export default function Dashboard() {
               Auto-Refreshing
             </div>
 
-            {/* Live FX pill */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -250,7 +245,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* KPI Cards */}
         <div className="kpi-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
@@ -306,7 +300,6 @@ export default function Dashboard() {
 
         <FilterBar onFilter={fetchAll} />
 
-        {/* Charts */}
         <div className="charts-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
@@ -323,13 +316,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Delivery timeline */}
         <div style={{ ...chartCard, marginBottom: '20px' }}>
           <div style={chartTitle}>Delivery Timeline — Days to Delivery</div>
           <DeliveryChart data={insights?.delivery_timeline || []} />
         </div>
 
-        {/* Orders table */}
         <div style={{
           background: '#0A0A0A',
           border: '1px solid rgba(139,92,246,0.12)',

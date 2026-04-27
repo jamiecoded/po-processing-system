@@ -37,7 +37,6 @@ app.include_router(currency.router, prefix="/currency", tags=["currency"])
 
 @app.on_event("startup")
 async def startup_event():
-    """Create DB tables on startup. Failure is logged but does not crash the app."""
     try:
         Base.metadata.create_all(bind=engine)
         logger.info("Database tables verified.")

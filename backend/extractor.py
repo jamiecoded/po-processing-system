@@ -7,7 +7,7 @@ from dateutil import parser as date_parser
 
 logger = logging.getLogger(__name__)
 
-# ── Configuration & Aliases ───────────────────────────────────────────────────
+# Configuration & aliases
 
 FIELD_ALIASES = {
     "supplier": ["supplier", "vendor", "sold by", "manufacturer", "ship from", "from"],
@@ -31,7 +31,7 @@ SKIP_ROW_KEYWORDS = {
 }
 
 
-# ── Utilities ─────────────────────────────────────────────────────────────────
+# Utility functions
 
 def _safe_float(s) -> float:
     if s is None: return 0.0
@@ -63,16 +63,9 @@ def _is_skip_row(text: str) -> bool:
     return any(kw in t for kw in SKIP_ROW_KEYWORDS)
 
 
-# ── 1. Field Extraction (Multi-line + Fuzzy) ──────────────────────────────────
+# 1. Extract main fields (fuzzy match)
 
 def extract_fields(text: str, warnings: list) -> Dict[str, str]:
-    """
-    Implements alias-based fuzzy matching. Handles both:
-      - Same-line: "Supplier: ABC Ltd"
-      - Multi-line: 
-          "Supplier"
-          "ABC Ltd"
-    """
     fields = {k: "" for k in FIELD_ALIASES.keys()}
     lines = [line.strip() for line in text.split("\n") if line.strip()]
     
@@ -126,7 +119,7 @@ def extract_fields(text: str, warnings: list) -> Dict[str, str]:
     return fields
 
 
-# ── 2. Line Item Extraction ───────────────────────────────────────────────────
+# 2. Extract line items
 
 def _normalize_item(style: str, qty: int, price: float, deliv: str = None) -> dict:
     return {
@@ -163,7 +156,7 @@ def strategy_a_table_extraction(page) -> List[Dict]:
                     if best and best[1] >= 85:
                         temp_map[field] = col_idx
             
-            # We strictly need at least a style number AND (quantity or price)
+            
             if "style_number" in temp_map and ("order_quantity" in temp_map or "unit_price" in temp_map):
                 header_idx = row_idx
                 col_map = temp_map
@@ -205,9 +198,7 @@ def strategy_b_text_extraction(text: str) -> List[Dict]:
         line = line.strip()
         if not line or _is_skip_row(line): continue
         
-        # Extremely flexible Regex:
-        # Looks for an Alphanumeric Code, followed by spaces, an Integer, spaces, Currency/Float
-        # Example matching: "ST-001  500  $15.20" OR "12345 500 15.20"
+        
         m = re.search(r"\b([A-Z0-9\-\_]{3,20})\s+(\d{1,6})\s+[\$£€]?\s*(\d{1,6}(?:\.\d{1,2})?)\b", line, re.IGNORECASE)
         if m:
             style = m.group(1)
@@ -251,7 +242,7 @@ def extract_line_items(pdf, text: str, warnings: list) -> List[Dict]:
     return dedup
 
 
-# ── Main Entry ────────────────────────────────────────────────────────────────
+# Main run loop
 
 def extract_po_data(file_path: str) -> dict:
     """End-to-end extraction workflow prioritizing robustness."""
@@ -271,20 +262,20 @@ def extract_po_data(file_path: str) -> dict:
     try:
         full_text = ""
         with pdfplumber.open(file_path) as pdf:
-            # 1. Gather all raw text to power text-fallback logic and Field Extractors
-            for page in pdf.pages:
-                full_text += (page.extract_text() or "") + "\n"
+            # Extract text
+            page_texts = [page.extract_text() for page in pdf.pages]
+            full_text = "\n".join([t for t in page_texts if t])
             
-            # 2. Extract Header Fields via Refactored Multi-line Fuzzy Matching
+            # Extract main fields
             fields = extract_fields(full_text, output["warnings"])
             for k, v in fields.items():
                 if k in output:
                     output[k] = v
             
-            # 3. Extract Line Items (Strategy A -> Strategy B Sequence)
+            # Extract line items
             line_items = extract_line_items(pdf, full_text, output["warnings"])
             
-            # 4. Ultimate Cleanup: Filter invalid ghosts out (just to be incredibly safe)
+            # Filter valid items
             valid_items = [i for i in line_items if i.get("order_quantity", 0) > 0]
             output["line_items"] = valid_items
             
