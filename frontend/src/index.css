@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --purple-primary:     #7C3AED;
+  --purple-dark:        #4F46E5;
+  --purple-light:       #A78BFA;
+  --purple-glow:        rgba(124, 58, 237, 0.35);
+  --border-accent:      rgba(124, 58, 237, 0.25);
+  
+  --bg-surface:    #0A0A0A;
+  --bg-elevated:   #111111;
+  --border-subtle: #1A1A1A;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  background: #000000;
+  color: #f0f0f8;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Primary button */
+.btn-primary {
+  background: linear-gradient(135deg, #7C3AED, #4F46E5) !important;
+  color: #ffffff !important;
+  border: none !important;
+  transition: background 200ms ease, box-shadow 200ms ease, transform 200ms ease !important;
+  cursor: pointer;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #A78BFA, #7C3AED) !important;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.45) !important;
+}
+
+.btn-primary:active:not(:disabled) {
+  background: linear-gradient(135deg, #6D28D9, #4338CA) !important;
+}
+
+/* Dashboard specific override */
+.dashboard .btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #A78BFA, #7C3AED) !important;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.4) !important;
+  transform: none !important;
+}
+
+/* Ghost button */
+.btn-ghost {
+  background: transparent !important;
+  border: 1px solid rgba(124, 58, 237, 0.45) !important;
+  color: #A78BFA !important;
+  transition: background 200ms ease, color 200ms ease, box-shadow 200ms ease !important;
+  cursor: pointer;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: linear-gradient(135deg, #7C3AED, #4F46E5) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.35) !important;
+  border-color: transparent !important;
+}
+
+/* Disabled state */
+.btn-disabled, button:disabled {
+  background: #1A1A1A !important;
+  color: #444444 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  border: 1px solid #222222 !important;
+}
+
+/* Navbar */
+.navbar {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid #1A1A1A !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+}
+.navbar-logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f0f0f8;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.navbar-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Responsive Classes */
+@media (max-width: 1024px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .filter-bar { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+  .charts-grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 768px) {
+  /* 1. Layout */
+  html, body { overflow-x: hidden !important; width: 100% !important; }
+  .page-wrapper { width: 100% !important; padding: 12px 16px !important; overflow-x: hidden !important; box-sizing: border-box !important; }
+  
+  /* 2. Header / Navbar */
+  .navbar { flex-direction: column !important; align-items: stretch !important; gap: 14px !important; padding: 16px !important; height: auto !important; }
+  .navbar-logo { font-size: 16px !important; margin-bottom: 4px !important; justify-content: center !important; }
+  .navbar-logo img { height: 26px !important; }
+  .navbar-actions { width: 100% !important; justify-content: space-between !important; gap: 8px !important; flex-wrap: wrap !important; }
+  .navbar-actions a, .navbar-actions button { flex: 1 !important; justify-content: center !important; text-align: center !important; height: 42px !important; font-size: 14px !important; }
+  
+  /* 3. Cards / Sections */
+  .kpi-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+  
+  /* Prevent header overlap */
+  .dashboard-header { flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 16px !important; }
+  .dashboard-header-text h1 { font-size: 24px !important; line-height: 1.2 !important; }
+  .dashboard-header-text p { font-size: 13px !important; margin-bottom: 8px !important; }
+  .dashboard-header-pills { flex-direction: column !important; width: 100% !important; align-items: stretch !important; }
+  .dashboard-header-pills > div { width: 100% !important; justify-content: center !important; white-space: normal !important; text-align: center !important; padding: 12px !important; }
+
+  /* 4. Charts */
+  .charts-grid { grid-template-columns: 1fr !important; gap: 16px !important; width: 100% !important; }
+  
+  /* 5. Tables */
+  /* Ensures inner table container can scroll left/right without breaking body */
+  table { min-width: 600px !important; } 
+  .table-container { width: 100% !important; overflow-x: auto !important; border-radius: 8px !important; }
+  
+  /* 6. Forms */
+  .login-card { width: 100% !important; max-width: none !important; margin: 12px 0 !important; padding: 24px 16px !important; border-radius: 12px !important; }
+  
+  .filter-bar { grid-template-columns: 1fr !important; gap: 14px !important; padding: 16px !important; width: 100% !important; box-sizing: border-box !important; }
+  .filter-bar .date-fields { flex-direction: column !important; gap: 12px !important; width: 100% !important; }
+  .filter-bar input, .filter-bar select { width: 100% !important; height: 44px !important; }
+  
+  .filter-actions { flex-direction: column !important; gap: 10px !important; width: 100% !important; }
+  .filter-actions button { width: 100% !important; height: 44px !important; }
+  
+  /* 7. Buttons */
+  button, .btn-primary, .btn-ghost { min-height: 44px !important; }
+  
+  .upload-container { width: 100% !important; padding: 24px 16px !important; margin: 0 !important; border-radius: 12px !important; }
+  .dropzone { padding: 32px 16px !important; }
+}

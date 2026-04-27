@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PO System</title>
+  <link rel="icon" type="image/png" href="/src/assets/Purchase Order System icon 2.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --purple-primary: #7C3AED;
+      --purple-dark: #4F46E5;
+      --purple-light: #A78BFA;
+      --purple-glow: rgba(124, 58, 237, 0.35);
+      --border-accent: rgba(124, 58, 237, 0.25);
+      --bg-base: #000000;
+      --bg-surface: #0A0A0A;
+      --bg-elevated: #111111;
+      --border-subtle: #1A1A1A;
+      --grad-primary: linear-gradient(135deg, #7C3AED, #4F46E5);
+      --grad-accent: linear-gradient(135deg, #7C3AED, #06B6D4);
+      --text-primary: #F1F0FF;
+      --text-secondary: #9B99B8;
+      --text-muted: #5A5878;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --error: #EF4444;
+      --info: #06B6D4;
+      --shadow-card: 0 0 0 1px rgba(124, 58, 237, 0.1), 0 8px 32px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 40px rgba(124, 58, 237, 0.2);
+      --shadow-button: 0 4px 20px rgba(124, 58, 237, 0.4);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #000000;
+      color: #F1F0FF;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-feature-settings: 'cv02', 'cv03', 'cv04';
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+      font-family: inherit;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #7C3AED;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #A78BFA;
+    }
+
+    *:focus-visible {
+      outline: 2px solid rgba(124, 58, 237, 0.6);
+      outline-offset: 2px;
+    }
+
+    /* ── Keyframes ───────────────────────────────── */
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.8);
+      }
+    }
+
+    @keyframes float-icon {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-7px);
+      }
+    }
+
+    @keyframes fade-slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        transform: translateX(-150%) skewX(-12deg);
+      }
+
+      100% {
+        transform: translateX(250%) skewX(-12deg);
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes toast-in {
+      from {
+        transform: translateX(110%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes toast-out {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+
+      to {
+        transform: translateX(110%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes stagger-in {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── Responsive: Dashboard KPI grid ─────────── */
+    @media (max-width: 1024px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .kpi-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    /* ── Responsive: FilterBar ───────────────────── */
+    @media (max-width: 1024px) {
+      .filter-bar {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+
+      .filter-bar>div input {
+        min-width: unset !important;
+        width: 100% !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .filter-bar {
+        grid-template-columns: 1fr !important;
+      }
+
+      .filter-actions {
+        grid-column: 1 / -1;
+        display: flex !important;
+        gap: 8px !important;
+      }
+
+      .filter-actions button {
+        flex: 1 !important;
+      }
+    }
+
+    /* ── Responsive: Navbar ──────────────────────── */
+    @media (max-width: 640px) {
+      .navbar-inner {
+        padding: 0 16px !important;
+      }
+
+      .navbar-logo {
+        font-size: 15px !important;
+      }
+
+      .btn-upload-po {
+        font-size: 12px !important;
+        padding: 0 12px !important;
+        height: 34px !important;
+      }
+
+      .btn-logout {
+        font-size: 12px !important;
+        padding: 0 10px !important;
+      }
+    }
+
+    /* ── Responsive: Login ───────────────────────── */
+    @media (max-width: 640px) {
+      .login-card {
+        padding: 28px 20px !important;
+        border-radius: 16px !important;
+        max-width: 100% !important;
+      }
+
+      .login-wrap {
+        padding: 16px !important;
+        align-items: flex-start !important;
+        padding-top: 40px !important;
+      }
+    }
+
+    /* ── Responsive: Upload ──────────────────────── */
+    @media (max-width: 640px) {
+      .page-content {
+        padding: 24px 16px !important;
+      }
+
+      .page-title {
+        font-size: 22px !important;
+      }
+
+      .upload-dropzone {
+        padding: 40px 20px !important;
+      }
+    }
+
+    /* ── Responsive: Dashboard page ─────────────── */
+    @media (max-width: 640px) {
+      .dash-content {
+        padding: 24px 16px !important;
+      }
+
+      .dash-title {
+        font-size: 22px !important;
+      }
+
+      .dash-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>

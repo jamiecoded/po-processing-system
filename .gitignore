@@ -1,0 +1,29 @@
+# ── Python ────────────────────────────────────────
+backend/venv/
+backend/.env
+backend/__pycache__/
+backend/**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+*.egg-info/
+.pytest_cache/
+
+# ── Node / Frontend ───────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+frontend/.env.production
+frontend/.env.*.local
+
+# ── OS / IDE ──────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# ── Uploads / temp ────────────────────────────────
+*.pdf
+tmp/
