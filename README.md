@@ -14,7 +14,7 @@ This platform replaces that manual bottleneck with a seamless workflow that nati
 
 ---
 
-## Project Scope
+## Scope
 
 ### 1. Data Extraction & Transformation
 - **Automated Imports:** Instantly parses inbound PO dataset geometries, completely eliminating manual PDF-to-Excel workflow conversions.
