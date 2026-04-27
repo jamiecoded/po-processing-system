@@ -1,13 +1,13 @@
 # PO Processing System
-**Live Application:** [**https://po-processing-system.vercel.app**](https://po-processing-system.vercel.app)
-
 <br/>
 <p align="center">
   <img src="./frontend/src/assets/Purchase%20Order%20System%202.png" alt="PO Processing System Dashboard" width="100%">
 </p>
 <br/>
 
-## Company Objective
+**Live Application:** [**https://po-processing-system.vercel.app**](https://po-processing-system.vercel.app)
+
+## Objective
 The core objective of this prototype is to automate the extraction of purchase order (PO) data directly from PDF files into a centralized software system. Historically, this workflow relied on tedious manual data-entry translating rigid PDFs into Excel spreadsheets.
 
 This platform replaces that manual bottleneck with a seamless workflow that natively parses formatting, stores structured fields in a cloud database, and establishes high-speed APIs routing real-time procurement data directly into interactive intelligence dashboards for various departments.
