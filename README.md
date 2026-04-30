@@ -31,11 +31,35 @@ A React dashboard for data visualization:
 - **Currency:** Converts USD order values to GBP using live rates.
 - **Filters:** Sort by Date Range, Suppliers, Brands, and Categories.
 
-### 4. Tech Stack
+## System Architecture
 
-- **Frontend:** React, Vite, Recharts (Deployed on Vercel)
-- **Backend:** Python, FastAPI, pdfplumber, pandas (Deployed on Render)
-- **Database:** PostgreSQL
+```mermaid
+graph TD
+    User([User / Client]) -->|Upload PDF/Excel| Frontend
+    User -->|Ask Questions| Frontend
+    Frontend[React Frontend] -->|REST API| Backend[FastAPI Backend]
+    
+    subgraph Backend Services
+        Backend --> Extractor[PDF Extractor / Excel Parser]
+        Backend --> Normalizer[Data Normalizer]
+        Backend --> Insights[Insights Engine]
+        Backend --> Chatbot[AI Chatbot Handler]
+    end
+    
+    Extractor --> Normalizer
+    Normalizer --> DB[(PostgreSQL Database)]
+    Insights --> DB
+    Chatbot --> DB
+    
+    Chatbot -->|Context + Query| Groq[Groq AI API]
+    Backend -->|Fetch Rates| Frankfurter[Frankfurter Currency API]
+```
+
+### Tech Stack
+- **Frontend:** React, Vite, Recharts, Context API (Deployed on Vercel)
+- **Backend:** Python, FastAPI, pdfplumber, pandas, Groq (Deployed on Render)
+- **Database:** PostgreSQL (Hosted via Render/Supabase)
+- **External Integrations:** Groq LLM API, Frankfurter Exchange API
 - **Security:** JWT Authentication
 
 ---
