@@ -9,21 +9,21 @@ export default function Toast({ message, type = 'success', visible, onClose }) {
 
   const colors = {
     success: { bg: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.35)', icon: '#10B981', text: '#10B981' },
-    error:   { bg: 'rgba(239,68,68,0.12)',  border: 'rgba(239,68,68,0.35)',  icon: '#EF4444', text: '#EF4444' },
+    error: { bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.35)', icon: '#EF4444', text: '#EF4444' },
   }
   const c = colors[type] || colors.success
 
   const icons = {
     success: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <circle cx="8" cy="8" r="7" stroke={c.icon} strokeWidth="1.5"/>
-        <path d="M5 8l2.5 2.5L11 5.5" stroke={c.icon} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="8" cy="8" r="7" stroke={c.icon} strokeWidth="1.5" />
+        <path d="M5 8l2.5 2.5L11 5.5" stroke={c.icon} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
     error: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <circle cx="8" cy="8" r="7" stroke={c.icon} strokeWidth="1.5"/>
-        <path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke={c.icon} strokeWidth="1.5" strokeLinecap="round"/>
+        <circle cx="8" cy="8" r="7" stroke={c.icon} strokeWidth="1.5" />
+        <path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke={c.icon} strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
   }
@@ -37,7 +37,7 @@ export default function Toast({ message, type = 'success', visible, onClose }) {
       display: 'flex',
       alignItems: 'center',
       gap: '10px',
-      background: '#0A0A0A',
+      background: '#0F0F1A',
       border: `1px solid ${c.border}`,
       borderRadius: '12px',
       padding: '14px 18px',

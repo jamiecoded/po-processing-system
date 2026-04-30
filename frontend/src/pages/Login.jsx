@@ -22,7 +22,7 @@ function FocusInput({ type, value, onChange, placeholder, autoComplete }) {
   const [focused, setFocused] = useState(false)
   return (
     <input
-      type={type}
+      type={type} 
       value={value}
       onChange={onChange}
       placeholder={placeholder}

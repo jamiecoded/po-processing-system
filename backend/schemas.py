@@ -26,6 +26,8 @@ class LineItemOut(BaseModel):
     unit_price: float
     delivery_date_confirmed: Optional[datetime] = None
     delivery_date_actual: Optional[datetime] = None
+    line_total_usd: Optional[float] = None
+    line_total_gbp: Optional[float] = None
 
     class Config:
         from_attributes = True
@@ -47,6 +49,26 @@ class PurchaseOrderOut(BaseModel):
     uploaded_filename: str
     order_date: Optional[datetime] = None
     delivery_date: Optional[datetime] = None
+    confirmed_ex_factory: Optional[datetime] = None
+    revised_ex_factory: Optional[datetime] = None
+    po_currency: Optional[str] = None
+    usd_price_per_pc: Optional[float] = None
+    gbp_price_per_pc: Optional[float] = None
+    total_order_qty: Optional[int] = None
+    business_unit: Optional[str] = None
+    department: Optional[str] = None
+    color: Optional[str] = None
+    country: Optional[str] = None
+    supplier_ref_no: Optional[str] = None
+    product_description: Optional[str] = None
+    new_rebuy: Optional[str] = None
+    factory: Optional[str] = None
+    style_number: Optional[str] = None
+    mode: Optional[str] = None
+    port_of_loading: Optional[str] = None
+    incoterms: Optional[str] = None
+    sample_approved_status: Optional[str] = None
+    sustainable: Optional[str] = None
     line_items: List[LineItemOut] = []
 
     class Config:
@@ -82,11 +104,16 @@ class InsightResponse(BaseModel):
     total_orders: int
     total_value_usd: float
     total_value_gbp: float
+    total_quantity: Optional[int] = None
+    active_suppliers: Optional[int] = None
     average_delivery_time_days: Optional[float] = None
-    by_supplier: List[SupplierInsight]
-    by_brand: List[BrandInsight]
-    by_category: List[CategoryInsight]
-    delivery_timeline: List[DeliveryItem]
+    by_supplier: list = []
+    by_brand: list = []
+    by_buyer: list = []
+    by_category: list = []
+    by_mode: list = []
+    currency_split: Optional[dict] = None
+    delivery_timeline: list = []
 
 
 class LineItemCreate(BaseModel):
@@ -95,6 +122,8 @@ class LineItemCreate(BaseModel):
     unit_price: float
     delivery_date_confirmed: Optional[str] = None
     delivery_date_actual: Optional[str] = None
+    line_total_usd: Optional[float] = None
+    line_total_gbp: Optional[float] = None
 
 
 class POIngestRequest(BaseModel):
@@ -106,4 +135,24 @@ class POIngestRequest(BaseModel):
     currency: Optional[str] = "USD"
     order_date: Optional[str] = None
     delivery_date: Optional[str] = None
+    confirmed_ex_factory: Optional[str] = None
+    revised_ex_factory: Optional[str] = None
+    po_currency: Optional[str] = None
+    usd_price_per_pc: Optional[float] = None
+    gbp_price_per_pc: Optional[float] = None
+    total_order_qty: Optional[int] = None
+    business_unit: Optional[str] = None
+    department: Optional[str] = None
+    color: Optional[str] = None
+    country: Optional[str] = None
+    supplier_ref_no: Optional[str] = None
+    product_description: Optional[str] = None
+    new_rebuy: Optional[str] = None
+    factory: Optional[str] = None
+    style_number: Optional[str] = None
+    mode: Optional[str] = None
+    port_of_loading: Optional[str] = None
+    incoterms: Optional[str] = None
+    sample_approved_status: Optional[str] = None
+    sustainable: Optional[str] = None
     line_items: List[LineItemCreate] = []
