@@ -52,6 +52,9 @@ COL_ALIASES = {
 
 SKIP_ROW_KEYWORDS = {"subtotal", "sub-total", "tax", "grand total", "total", "shipping", "discount", "vat"}
 
+# Words that indicate a cell is a company/person name, not a field value for po_number
+_COMPANY_INDICATORS = {"limited", "ltd", "inc", "llc", "gmbh", "corporation", "corp", "group", ".com", "plc", "bv"}
+
 
 def _clean_val(v) -> Optional[str]:
     if v is None:
@@ -112,8 +115,26 @@ def _match_field(header: str) -> Optional[str]:
     return None
 
 
+def _looks_like_po_number(value: str) -> bool:
+    """Return True only if value looks like a PO/order code, not a company/person name."""
+    if not value:
+        return False
+    val_lower = value.lower()
+    # Reject if it contains company name indicators
+    if any(ind in val_lower for ind in _COMPANY_INDICATORS):
+        return False
+    # Reject if it has more than one space (company names, descriptions)
+    if value.count(" ") > 1:
+        return False
+    # A PO number: strip hyphens/underscores/slashes, should be mostly alphanumeric
+    clean = re.sub(r"[\-_/\s]", "", value)
+    if len(clean) >= 4 and re.match(r"^[A-Z0-9]+$", clean, re.IGNORECASE):
+        return True
+    return False
+
+
 def extract_fields(text: str, warnings: list) -> Dict[str, Optional[str]]:
-    """Extract header-level fields from text using label matching."""
+    """Extract header-level fields from text using label:value line matching."""
     fields = {k: None for k in FIELD_ALIASES.keys()}
     lines = [line.strip() for line in text.split("\n") if line.strip()]
 
@@ -145,13 +166,91 @@ def extract_fields(text: str, warnings: list) -> Dict[str, Optional[str]]:
                     if not other:
                         fields[field] = _clean_val(next_val)
 
+    # Tightened PO number fallback: only accept values that look like real PO codes
     if not fields["po_number"]:
-        m = re.search(r"(?:PO|Order)[\s#:\-]+([A-Z0-9\-_]{4,20})", text, re.IGNORECASE)
-        if m:
+        m = re.search(r"(?:PO|Order)[\s#:\-]+([A-Z0-9\-_]{5,20})", text, re.IGNORECASE)
+        if m and _looks_like_po_number(m.group(1)):
             fields["po_number"] = m.group(1)
 
-    if not fields.get("gbp_price_per_pc") and re.search(r"\bGBP\b|£", text):
-        pass
+    # Discard po_number if it looks like a company name (caught by earlier label matching)
+    if fields["po_number"] and not _looks_like_po_number(fields["po_number"]):
+        logger.warning(f"Rejected spurious po_number value: {fields['po_number']!r}")
+        fields["po_number"] = None
+
+    return fields
+
+
+def extract_fields_from_tables(pdf, warnings: list) -> Dict[str, Optional[str]]:
+    """
+    Table-based header field extraction — handles two common layouts:
+    1. Horizontal: row[0] = field headers, row[1] = values  (e.g. boohoo format)
+    2. Key-value: each row has [label, value] in two columns
+    """
+    fields = {k: None for k in FIELD_ALIASES.keys()}
+
+    for page in pdf.pages:
+        try:
+            tables = page.extract_tables()
+        except Exception:
+            continue
+
+        for table in tables:
+            if not table:
+                continue
+
+            # --- Strategy A: horizontal header row ---
+            # Look for a row where ≥2 cells match known field aliases
+            for row_idx, header_row in enumerate(table):
+                if row_idx >= len(table) - 1:
+                    break
+                col_to_field: Dict[int, str] = {}
+                for col_idx, cell in enumerate(header_row):
+                    if not cell:
+                        continue
+                    matched = _match_field(str(cell))
+                    if matched and matched not in col_to_field.values():
+                        col_to_field[col_idx] = matched
+
+                if len(col_to_field) >= 2:
+                    value_row = table[row_idx + 1]
+                    for col_idx, field_name in col_to_field.items():
+                        if fields[field_name]:
+                            continue
+                        if col_idx < len(value_row):
+                            raw = str(value_row[col_idx] or "").strip()
+                            val = _clean_val(raw)
+                            if val:
+                                # Extra guard: don't let company names become po_number
+                                if field_name == "po_number" and not _looks_like_po_number(val):
+                                    logger.warning(
+                                        f"Table extraction: rejected spurious po_number {val!r}"
+                                    )
+                                    continue
+                                fields[field_name] = val
+
+            # --- Strategy B: two-column key-value table ---
+            for row in table:
+                if not row or len(row) < 2:
+                    continue
+                label_cell = str(row[0] or "").strip()
+                # Value may be in column 1 or column 2 if column 1 is empty
+                value_cell = None
+                for col_idx in range(1, min(len(row), 4)):
+                    candidate = str(row[col_idx] or "").strip()
+                    if candidate:
+                        value_cell = candidate
+                        break
+
+                if not label_cell or not value_cell:
+                    continue
+
+                matched = _match_field(label_cell)
+                if matched and not fields[matched]:
+                    val = _clean_val(value_cell)
+                    if val:
+                        if matched == "po_number" and not _looks_like_po_number(val):
+                            continue
+                        fields[matched] = val
 
     return fields
 
@@ -269,7 +368,7 @@ def extract_line_items(pdf, text: str, warnings: list) -> List[Dict]:
 
 
 def extract_po_data(file_path: str) -> dict:
-    """End-to-end extraction: returns all PO fields from a PDF."""
+    """End-to-end extraction: tries all strategies and merges results."""
     output = {k: None for k in FIELD_ALIASES.keys()}
     output["line_items"] = []
     output["warnings"] = []
@@ -280,8 +379,17 @@ def extract_po_data(file_path: str) -> dict:
             page_texts = [page.extract_text() for page in pdf.pages]
             full_text = "\n".join(t for t in page_texts if t)
 
-            fields = extract_fields(full_text, output["warnings"])
-            output.update({k: v for k, v in fields.items() if v is not None})
+            # Strategy 1: label:value text scanning
+            fields_text = extract_fields(full_text, output["warnings"])
+
+            # Strategy 2: table-based header extraction
+            fields_tables = extract_fields_from_tables(pdf, output["warnings"])
+
+            # Merge: text-based wins where it found something; tables fill the gaps
+            for key in FIELD_ALIASES.keys():
+                val = fields_text.get(key) or fields_tables.get(key)
+                if val is not None:
+                    output[key] = val
 
             if output.get("gbp_price_per_pc") and not output.get("usd_price_per_pc"):
                 output["currency"] = "GBP"
