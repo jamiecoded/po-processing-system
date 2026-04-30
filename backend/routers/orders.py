@@ -54,7 +54,6 @@ async def upload_pdfs(
             normalized = normalize_po_data(raw)
             normalized = compute_currency_values(normalized, usd_to_gbp, gbp_to_usd)
 
-            # Build PO object — only pass fields that exist on the model
             po_fields = {
                 k: v for k, v in normalized.items()
                 if hasattr(models.PurchaseOrder, k) and k != "line_items"
@@ -63,7 +62,6 @@ async def upload_pdfs(
             po_fields["uploaded_filename"] = file.filename or "unknown.pdf"
             po_fields["status"] = "active"
 
-            # Convert ISO date strings to datetime objects
             for date_field in (
                 "order_date", "delivery_date",
                 "confirmed_ex_factory", "revised_ex_factory"

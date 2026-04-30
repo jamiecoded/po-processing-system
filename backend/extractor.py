@@ -145,15 +145,13 @@ def extract_fields(text: str, warnings: list) -> Dict[str, Optional[str]]:
                     if not other:
                         fields[field] = _clean_val(next_val)
 
-    # Hard regex fallback for PO number
     if not fields["po_number"]:
         m = re.search(r"(?:PO|Order)[\s#:\-]+([A-Z0-9\-_]{4,20})", text, re.IGNORECASE)
         if m:
             fields["po_number"] = m.group(1)
 
-    # Currency detection — only if no specific price column found
     if not fields.get("gbp_price_per_pc") and re.search(r"\bGBP\b|£", text):
-        pass  # Don't set currency; let price columns determine it
+        pass
 
     return fields
 
@@ -212,7 +210,6 @@ def extract_line_items(pdf, text: str, warnings: list) -> List[Dict]:
 
                 style = get_val("style_number")
                 qty = _safe_int(get_val("order_quantity"))
-                # Prefer USD price, fall back to GBP, then generic unit_price
                 usd_p = _safe_float(get_val("usd_price_per_pc"))
                 gbp_p = _safe_float(get_val("gbp_price_per_pc"))
                 price = usd_p or gbp_p or _safe_float(get_val("unit_price"))
@@ -239,7 +236,6 @@ def extract_line_items(pdf, text: str, warnings: list) -> List[Dict]:
                 dedup.append(i)
         return dedup
 
-    # Strategy B fallback — regex across text lines
     warnings.append("No structured table detected; using regex fallback for line items.")
     fallback = []
     for line in text.split("\n"):
@@ -287,7 +283,6 @@ def extract_po_data(file_path: str) -> dict:
             fields = extract_fields(full_text, output["warnings"])
             output.update({k: v for k, v in fields.items() if v is not None})
 
-            # Detect currency from price columns
             if output.get("gbp_price_per_pc") and not output.get("usd_price_per_pc"):
                 output["currency"] = "GBP"
 

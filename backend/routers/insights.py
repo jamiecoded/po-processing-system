@@ -46,12 +46,10 @@ def get_insights(
 
     all_pos = base.all()
 
-    # Totals
     total_usd = sum(p.total_value_usd or 0 for p in all_pos)
     total_gbp = sum(p.total_value_gbp or 0 for p in all_pos)
     total_qty = sum(p.total_order_qty or 0 for p in all_pos)
 
-    # By supplier
     suppliers: dict = {}
     for p in all_pos:
         s = p.supplier or "Unknown"
@@ -71,7 +69,6 @@ def get_insights(
         key=lambda x: x["total_value_usd"], reverse=True,
     )
 
-    # By brand
     brands: dict = {}
     for p in all_pos:
         b = p.brand or "Unknown"
@@ -84,7 +81,6 @@ def get_insights(
         brands[b]["total_value_gbp"] += p.total_value_gbp or 0
     by_brand = sorted(brands.values(), key=lambda x: x["total_value_usd"], reverse=True)
 
-    # By buyer
     buyers: dict = {}
     for p in all_pos:
         b = p.buyer or "Unknown"
@@ -96,14 +92,12 @@ def get_insights(
         buyers[b]["total_value_gbp"] += p.total_value_gbp or 0
     by_buyer = sorted(buyers.values(), key=lambda x: x["order_count"], reverse=True)
 
-    # By category
     cats: dict = {}
     for p in all_pos:
         c = p.category or "Unknown"
         cats[c] = cats.get(c, 0) + 1
     by_category = [{"category": k, "order_count": v} for k, v in cats.items()]
 
-    # By mode
     modes: dict = {}
     for p in all_pos:
         m = p.mode or "Unknown"
@@ -112,7 +106,6 @@ def get_insights(
         modes[m]["order_count"] += 1
         modes[m]["total_value_usd"] += p.total_value_usd or 0
 
-    # Currency split
     usd_pos = [p for p in all_pos if p.po_currency == "USD"]
     gbp_pos = [p for p in all_pos if p.po_currency == "GBP"]
     usd_total = sum(p.total_value_usd or 0 for p in usd_pos)
@@ -127,7 +120,6 @@ def get_insights(
         "gbp_percentage": round(gbp_total_native / grand * 100, 1) if grand else 0,
     }
 
-    # Delivery timeline
     timeline = []
     total_gap = 0
     gap_count = 0
@@ -152,7 +144,6 @@ def get_insights(
                 total_gap += abs(days_var)
                 gap_count += 1
         elif p.order_date and p.delivery_date:
-            # Legacy fallback
             gap = (p.delivery_date - p.order_date).days
             if gap >= 0:
                 total_gap += gap

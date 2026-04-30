@@ -120,7 +120,6 @@ def export_data(
             headers={"Content-Disposition": "attachment; filename=purchase_orders.csv"},
         )
 
-    # Excel export — 2 sheets
     wb = Workbook()
     ws_po = wb.active
     ws_po.title = "Purchase Orders"
@@ -137,7 +136,6 @@ def export_data(
             if col_idx in [17, 18, 19, 20] and isinstance(val, (int, float)):
                 cell.number_format = '0.00'
 
-    # Summary row
     sr = len(orders) + 2
     ws_po.cell(row=sr, column=1, value="TOTALS").font = Font(bold=True)
     ws_po.cell(row=sr, column=16, value=sum(po.total_order_qty or 0 for po in orders)).font = Font(bold=True)
@@ -146,7 +144,6 @@ def export_data(
 
     _auto_width(ws_po)
 
-    # Sheet 2 — Line Items
     ws_li = wb.create_sheet("Line Items")
     LI_HEADERS = [
         "PO Number", "Supplier", "Brand", "Style Number",

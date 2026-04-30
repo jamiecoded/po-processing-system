@@ -21,7 +21,6 @@ class PurchaseOrder(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
 
-    # Core identity
     po_number = Column(String, index=True)
     supplier = Column(String)
     brand = Column(String)
@@ -30,16 +29,14 @@ class PurchaseOrder(Base):
     status = Column(String, default="active")
     created_at = Column(DateTime, default=datetime.utcnow)
     uploaded_filename = Column(String)
-    currency = Column(String, default="USD", nullable=True)  # legacy, kept for compat
+    currency = Column(String, default="USD", nullable=True)
 
-    # Dates
     order_date = Column(DateTime, nullable=True)
     delivery_date = Column(DateTime, nullable=True)
     confirmed_ex_factory = Column(DateTime, nullable=True)
     revised_ex_factory = Column(DateTime, nullable=True)
 
-    # Currency
-    po_currency = Column(String, nullable=True)          # "USD" or "GBP"
+    po_currency = Column(String, nullable=True)
     usd_price_per_pc = Column(Float, nullable=True)
     gbp_price_per_pc = Column(Float, nullable=True)
     total_value_usd = Column(Float, nullable=True)
@@ -47,7 +44,6 @@ class PurchaseOrder(Base):
     exchange_rate = Column(Float, nullable=True)
     total_order_qty = Column(Integer, nullable=True)
 
-    # Classification
     business_unit = Column(String, nullable=True)
     department = Column(String, nullable=True)
     color = Column(String, nullable=True)
@@ -58,7 +54,6 @@ class PurchaseOrder(Base):
     factory = Column(String, nullable=True)
     style_number = Column(String, nullable=True)
 
-    # Logistics
     mode = Column(String, nullable=True)
     port_of_loading = Column(String, nullable=True)
     incoterms = Column(String, nullable=True)

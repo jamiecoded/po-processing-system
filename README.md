@@ -8,53 +8,35 @@
 **Live Application:** [**https://po-processing-system.vercel.app**](https://po-processing-system.vercel.app)
 
 ## Objective
-The core objective of this prototype is to automate the extraction of purchase order (PO) data directly from PDF files into a centralized software system. Historically, this workflow relied on tedious manual data-entry translating rigid PDFs into Excel spreadsheets.
-
-This platform replaces that manual bottleneck with a seamless workflow that natively parses formatting, stores structured fields in a cloud database, and establishes high-speed APIs routing real-time procurement data directly into interactive intelligence dashboards for various departments.
+This project automates the extraction of purchase order (PO) data from PDF files into a centralized system. It replaces manual data entry by extracting fields, storing them in a database, and serving them via APIs to an analytics dashboard.
 
 ---
 
-## Scope
+## Features
 
-### 1. Data Extraction & Transformation
-- **Automated Imports:** Instantly parses inbound PO dataset geometries, completely eliminating manual PDF-to-Excel workflow conversions.
-- **Data Normalization:** Extracts and standardizes crucial procurement fields: Supplier, Brand, Buyer, Category, Style Number, Order Quantity, Unit Price, Order Date, and Delivery Date.
-- **Robust Error Handling:** Employs advanced fuzzy-matching and regex fallback logic to adapt dynamically when vendor layouts omit fields or restructure templates, guaranteeing pristine backend data integrity.
+### 1. Data Processing
+- **Automated Imports:** Parses inbound PO PDFs to eliminate manual entry.
+- **Data Normalization:** Extracts standard fields: Supplier, Brand, Buyer, Category, Style Number, Order Quantity, Unit Price, Order Date, and Delivery Date.
+- **Fallback Logic:** Uses fuzzy-matching and regex to adapt to different vendor layouts.
 
-### 2. Data Storage & Pipelines
-- **Relational Storage:** Information is natively persisted into a strongly-typed `PostgreSQL` instance.
-- **REST APIs:** Full internal REST architecture powering instantaneous front-end queries and system integration.
-- **Data Export:** Integrated capability permitting users to extract sanitized datasets instantly back out to Excel (`.xlsx`) or `CSV` formatting for external analysis.
+### 2. Storage & API
+- **Database:** Uses PostgreSQL for relational storage.
+- **REST APIs:** FastAPI backend for frontend queries and integration.
+- **Export:** Export data to Excel (`.xlsx`) or `CSV`.
 
-### 3. Dashboard & Insights
-Built exclusively via React and Recharts, the centralized Web-Dashboard offers real-time visualization:
-- **Core Insights:** Dynamically showcases aggregate Order Counts, total Supplier Value matrices, and Quantity distribution.
-- **Delivery Timeline Logic:** Features a granular Delivery Gap analytic, tracking exact days between formal `Order Date` vs `Actual Delivery` requirements natively.
-- **Live FX Conversion:** Hooks into an active FIAT integration continuously interpolating global USD order values strictly into GBP on the fly.
-- **Interactive Filers:** Comprehensive sorting tools toggling data globally by custom Date Ranges, Suppliers, Brands, and Categories.
+### 3. Dashboard
+A React dashboard for data visualization:
+- **Metrics:** Shows Order Counts, Supplier Values, and Quantities.
+- **Delivery Tracking:** Tracks days between Order Date and Delivery Date.
+- **Currency:** Converts USD order values to GBP using live rates.
+- **Filters:** Sort by Date Range, Suppliers, Brands, and Categories.
 
-### 4. System Architecture
+### 4. Tech Stack
 
-#### End-to-End Workflow Diagram
-```text
-[PDF Upload]
-     ↓
-[Intelligent Data Extraction (Fuzzy Matching + RegEx)]
-     ↓
-[Transformation & Normalization]
-     ↓
-[PostgreSQL Cloud Database]
-     ↓
-[FastAPI REST Interface (with Auth)]
-     ↓
-[Live React Analytics Dashboard]
-```
-
-#### Technology Stack
-- **Frontend Layer:** `React.js`, `Vite`, `React Router`, `Recharts` — **Deployed on Vercel**
-- **Backend Layer:** `Python`, `FastAPI`, `pdfplumber`, `rapidfuzz`, `pandas` — **Deployed on Render (Web Service)**
-- **Database Engine:** `PostgreSQL` — **Hosted uniquely via Render/Supabase Cloud**
-- **Security:** Standard JSON Web Token (JWT) Bearer Authentication locking private routes and data flow. 
+- **Frontend:** React, Vite, Recharts (Deployed on Vercel)
+- **Backend:** Python, FastAPI, pdfplumber, pandas (Deployed on Render)
+- **Database:** PostgreSQL
+- **Security:** JWT Authentication
 
 ---
 

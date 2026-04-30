@@ -91,12 +91,10 @@ async def import_excel(
 
     content = await file.read()
     try:
-        # Row 1 (index 1) is the real header — row 0 has formula/label rows
         df = pd.read_excel(io.BytesIO(content), header=1)
     except Exception as e:
         raise HTTPException(400, f"Could not read Excel file: {e}")
 
-    # Rename columns using map
     rename = {col: EXCEL_COL_MAP[col] for col in df.columns if col in EXCEL_COL_MAP}
     df = df.rename(columns=rename)
 
@@ -162,7 +160,6 @@ async def import_excel(
                 "uploaded_filename": file.filename,
                 "status": "active",
                 "user_id": current_user.id,
-                # legacy
                 "currency": currency_data["po_currency"],
             }
 
@@ -184,7 +181,6 @@ async def import_excel(
 
             db.flush()
 
-            # Upsert line item
             style = _clean(row.get("style_number"))
             if style:
                 li_existing = (

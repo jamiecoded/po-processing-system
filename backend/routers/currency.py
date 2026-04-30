@@ -11,7 +11,7 @@ _cache = {
     "gbp_to_usd": None,
     "fetched_at": None,
 }
-CACHE_TTL = 15  # minutes — keeps rate within 3 pence tolerance
+CACHE_TTL = 15
 FALLBACK_USD_TO_GBP = 0.79
 FALLBACK_GBP_TO_USD = 1.27
 
@@ -30,18 +30,16 @@ async def refresh_rates():
         _cache["fetched_at"]
         and now - _cache["fetched_at"] < timedelta(minutes=CACHE_TTL)
     ):
-        return  # still fresh
+        return
 
     try:
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
         async with httpx.AsyncClient(timeout=6.0, headers=headers) as client:
-            # Fetch USD → GBP
             r1 = await client.get("https://api.frankfurter.dev/v1/latest?from=USD&to=GBP")
             r1.raise_for_status()
             d1 = r1.json()
             usd_to_gbp = float(d1["rates"]["GBP"])
 
-            # Fetch GBP → USD independently (not derived)
             r2 = await client.get("https://api.frankfurter.dev/v1/latest?from=GBP&to=USD")
             r2.raise_for_status()
             d2 = r2.json()
@@ -54,7 +52,6 @@ async def refresh_rates():
 
     except Exception as exc:
         logger.error(f"Currency fetch failed: {exc}")
-        # Keep last cached value — only use hardcoded fallback if cache is completely empty
         if _cache["usd_to_gbp"] is None:
             logger.warning("No cached rate available — using hardcoded fallback 0.79")
             _cache["usd_to_gbp"] = FALLBACK_USD_TO_GBP
@@ -68,12 +65,12 @@ async def get_currency():
     if _cache["fetched_at"]:
         stale = (datetime.utcnow() - _cache["fetched_at"]).total_seconds() > CACHE_TTL * 60
     else:
-        stale = True  # fallback values, never actually fetched
+        stale = True
 
     return {
         "usd_to_gbp": _cache["usd_to_gbp"],
         "gbp_to_usd": _cache["gbp_to_usd"],
-        "rate": _cache["usd_to_gbp"],        # legacy key — keep for backward compat
+        "rate": _cache["usd_to_gbp"],
         "fetched_at": _cache["fetched_at"].isoformat() if _cache["fetched_at"] else None,
         "cache_ttl_minutes": CACHE_TTL,
         "stale": stale,

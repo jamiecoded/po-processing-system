@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class HistoryMessage(BaseModel):
-    role: str      # "user" or "assistant"
+    role: str
     content: str
 
 
@@ -40,7 +40,6 @@ def _build_context(db: Session, current_user) -> dict:
     total_gbp = sum(p.total_value_gbp or 0 for p in pos)
     total_qty = sum(p.total_order_qty or 0 for p in pos)
 
-    # Suppliers
     sup: dict = {}
     for p in pos:
         s = p.supplier or "Unknown"
@@ -59,7 +58,6 @@ def _build_context(db: Session, current_user) -> dict:
         key=lambda x: x["total_usd"], reverse=True
     )[:10]
 
-    # Brands
     brd: dict = {}
     for p in pos:
         b = p.brand or "Unknown"
@@ -70,7 +68,6 @@ def _build_context(db: Session, current_user) -> dict:
         brd[b]["total_gbp"] += p.total_value_gbp or 0
     by_brand = sorted(brd.values(), key=lambda x: x["total_usd"], reverse=True)[:10]
 
-    # Buyers
     buyers: dict = {}
     for p in pos:
         b = p.buyer or "Unknown"
@@ -78,7 +75,6 @@ def _build_context(db: Session, current_user) -> dict:
     by_buyer = sorted([{"buyer": k, "count": v} for k, v in buyers.items()],
                       key=lambda x: x["count"], reverse=True)[:8]
 
-    # Mode breakdown
     modes: dict = {}
     for p in pos:
         m = p.mode or "Unknown"
@@ -87,11 +83,9 @@ def _build_context(db: Session, current_user) -> dict:
         modes[m]["count"] += 1
         modes[m]["total_usd"] += p.total_value_usd or 0
 
-    # Currency split
     usd_pos = [p for p in pos if p.po_currency == "USD"]
     gbp_pos = [p for p in pos if p.po_currency == "GBP"]
 
-    # Upcoming deliveries (next 30 days)
     upcoming_cutoff = now + timedelta(days=30)
     upcoming = []
     for p in pos:
@@ -107,7 +101,6 @@ def _build_context(db: Session, current_user) -> dict:
             })
     upcoming.sort(key=lambda x: x["date"])
 
-    # Overdue POs
     overdue = []
     for p in pos:
         ref_date = p.confirmed_ex_factory or p.delivery_date
@@ -122,7 +115,6 @@ def _build_context(db: Session, current_user) -> dict:
             })
     overdue.sort(key=lambda x: x["days_late"], reverse=True)
 
-    # Date range of data
     dates = [p.created_at for p in pos if p.created_at]
     date_range = {
         "earliest": min(dates).strftime("%Y-%m-%d") if dates else None,
@@ -195,7 +187,6 @@ YOUR ROLE:
 
 TODAY'S DATE: {datetime.utcnow().strftime("%Y-%m-%d")}"""
 
-    # Build message array including conversation history (last 12 turns)
     messages = [{"role": "system", "content": system_prompt}]
     for h in (request.history or [])[-12:]:
         messages.append({"role": h.role, "content": h.content})

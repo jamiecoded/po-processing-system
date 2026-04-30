@@ -86,13 +86,11 @@ def normalize_po_data(raw: dict) -> dict:
     """Normalize raw extracted PO data into a clean dict ready for DB insertion.
     Currency values are NOT computed here — call compute_currency_values() after.
     """
-    # Sum line item quantities for total_order_qty if not already present
     line_items_raw = raw.get("line_items") or []
     total_qty = _safe_int(raw.get("total_order_qty")) or sum(
         _safe_int(i.get("order_quantity")) for i in line_items_raw
     )
 
-    # Pick unit price from first line item if not at PO level
     first_item = line_items_raw[0] if line_items_raw else {}
     usd_pc = raw.get("usd_price_per_pc") or first_item.get("unit_price")
     gbp_pc = raw.get("gbp_price_per_pc")
@@ -103,12 +101,11 @@ def normalize_po_data(raw: dict) -> dict:
         "brand": _safe_str(raw.get("brand")),
         "buyer": _safe_str(raw.get("buyer")),
         "category": _safe_str(raw.get("category")),
-        "currency": _safe_str(raw.get("currency"), "USD"),  # legacy
+        "currency": _safe_str(raw.get("currency"), "USD"),
         "order_date": _parse_date(raw.get("order_date") or raw.get("po_recd_date")),
         "delivery_date": _parse_date(raw.get("delivery_date") or raw.get("confirmed_ex_factory")),
         "confirmed_ex_factory": _parse_date(raw.get("confirmed_ex_factory")),
         "revised_ex_factory": _parse_date(raw.get("revised_ex_factory")),
-        # New fields
         "total_order_qty": total_qty,
         "usd_price_per_pc": usd_pc,
         "gbp_price_per_pc": gbp_pc,

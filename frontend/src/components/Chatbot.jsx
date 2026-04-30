@@ -23,11 +23,9 @@ function TypingDots() {
 }
 
 function renderContent(text) {
-  // Simple formatting: **bold**, newlines, bullet points
   return text.split('\n').map((line, i) => {
     const trimmed = line.trim()
     if (!trimmed) return <div key={i} style={{ height: '6px' }} />
-    // Bullet points
     if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
       const content = trimmed.slice(2)
       return (
@@ -115,7 +113,6 @@ export default function Chatbot() {
   const inputRef = useRef(null)
   const recognitionRef = useRef(null)
 
-  // Check voice support on mount
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition
     if (SR) {
@@ -163,7 +160,6 @@ export default function Chatbot() {
     if (open) setTimeout(() => inputRef.current?.focus(), 150)
   }, [open])
 
-  // Escape to close
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape' && open) setOpen(false) }
     window.addEventListener('keydown', handler)
@@ -213,7 +209,6 @@ export default function Chatbot() {
     setShowQuestions(false)
     setLoading(true)
 
-    // Build history from current messages (exclude the initial greeting, last 12)
     const history = messages
       .filter(m => m.role === 'user' || m.role === 'assistant')
       .slice(-12)
@@ -250,7 +245,6 @@ export default function Chatbot() {
 
   return (
     <>
-      {/* Floating button */}
       <button
         onClick={() => setOpen(v => !v)}
         style={{
@@ -273,7 +267,6 @@ export default function Chatbot() {
         }
       </button>
 
-      {/* Chat panel */}
       {open && (
         <div style={{
           position: 'fixed',
@@ -294,7 +287,6 @@ export default function Chatbot() {
           overflow: 'hidden',
         }}>
 
-          {/* Header */}
           <div style={{
             padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.05)',
             display: 'flex', alignItems: 'center', gap: '10px',
@@ -307,7 +299,6 @@ export default function Chatbot() {
               <div style={{ color: '#F1F0FF', fontSize: '14px', fontWeight: '600', letterSpacing: '-0.01em' }}>PO Assistant</div>
             </div>
 
-            {/* Voice output toggle */}
             <button
               onClick={() => { setVoiceOutput(v => !v); window.speechSynthesis?.cancel() }}
               style={{ background: voiceOutput ? 'rgba(139,92,246,0.2)' : 'transparent', border: `1px solid ${voiceOutput ? 'rgba(139,92,246,0.4)' : 'rgba(255,255,255,0.08)'}`, borderRadius: '8px', padding: '6px 8px', cursor: 'pointer', color: voiceOutput ? '#A78BFA' : '#5A5878', transition: 'all 150ms', display: 'flex', alignItems: 'center' }}
@@ -319,7 +310,6 @@ export default function Chatbot() {
               }
             </button>
 
-            {/* Clear button */}
             <button onClick={clearChat}
               style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '6px 8px', cursor: 'pointer', color: '#5A5878', transition: 'all 150ms', display: 'flex', alignItems: 'center' }}
               onMouseEnter={e => e.currentTarget.style.color = '#F1F0FF'}
@@ -330,7 +320,6 @@ export default function Chatbot() {
 
           </div>
 
-          {/* Messages */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '16px 14px', display: 'flex', flexDirection: 'column' }}
             ref={el => { if (el) el.scrollTop = el.scrollHeight }}>
             {messages.map((msg, i) => (
@@ -349,7 +338,6 @@ export default function Chatbot() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick questions — vertical stack, hidden after first interaction */}
           {showQuestions && <div style={{ padding: '8px 14px', display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
             {QUICK_QUESTIONS.map(q => (
               <button key={q} onClick={() => sendMessage(q)} disabled={loading}
@@ -367,7 +355,6 @@ export default function Chatbot() {
             ))}
           </div>}
 
-          {/* Voice listening indicator */}
           {(isListening || interimText) && (
             <div style={{
               margin: '0 14px 6px',
@@ -382,7 +369,6 @@ export default function Chatbot() {
             </div>
           )}
 
-          {/* Input bar */}
           <div style={{ padding: '10px 14px 14px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
             <div style={{ flex: 1, position: 'relative' }}>
               <textarea
@@ -410,7 +396,6 @@ export default function Chatbot() {
               />
             </div>
 
-            {/* Mic button */}
             {voiceSupported && (
               <button
                 onClick={toggleVoiceInput}
@@ -433,7 +418,6 @@ export default function Chatbot() {
               </button>
             )}
 
-            {/* Send button */}
             <button
               onClick={() => sendMessage()}
               disabled={(!input.trim() && !interimText) || loading}
